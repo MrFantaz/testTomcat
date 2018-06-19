@@ -16,7 +16,10 @@
     <p>Login<input type="text" name="Login" placeholder="Enter login"></p>
     <p>Password<input type="password" name="Password" placeholder="Enter password"></p>
     <p>Email<input type="email" name="Email" placeholder="Enter email"></p>
-    <button>Отправить</button>
+    <p><% if( request.getAttribute("error")!=null){
+        response.getWriter().println(request.getAttribute("error"));
+    }%></p>
+    <button>Submit</button>
 </form>
 </body>
 </html>

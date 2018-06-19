@@ -19,11 +19,24 @@ public class ProcessLoginForm extends javax.servlet.http.HttpServlet {
         String password =request.getParameter("Password");
         String email = request.getParameter("Email");
         password = convertToMd5(password);
+        String passDataBase = DatabaseConnection.getInstance().loadUserPass(login,email);
+        out.println(passDataBase);
         out.println("Login= "+login+" Pass= "+password+" Real Password "+" Email= "+email+" Address= "+request.getRemoteAddr());
-        String nextJSP = "/Catalog.jsp";
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(nextJSP);
-        request.setAttribute("hex",password);
-        dispatcher.forward(request,response);
+        if(password.equals(passDataBase)) {
+            String nextJSP = "/Catalog.jsp";
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(nextJSP);
+            request.setAttribute("hex", password);
+            dispatcher.forward(request, response);
+        }
+
+
+
+            String nextJSP = "/index.jsp";
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(nextJSP);
+            request.setAttribute("error", "Error Login or Pass");
+            dispatcher.forward(request, response);
+
+
     }
     private static String convertToMd5(final String md5) throws UnsupportedEncodingException {
         StringBuffer sb=null;
@@ -34,10 +47,18 @@ public class ProcessLoginForm extends javax.servlet.http.HttpServlet {
             for (int i = 0; i < array.length; ++i) {
                 sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
             }
+
+
+
+
             return sb.toString();
         } catch (final java.security.NoSuchAlgorithmException e) {
         }
         return sb.toString();
     }
 
+    @Override
+    public void destroy() {
+        DatabaseConnection.getInstance().closeDriver();
+    }
 }
